@@ -5,11 +5,17 @@
 </head>
 <body>
     <h1>Мои задачи</h1>
+    
+    <!-- Ссылка для создания новой задачи -->
+    <a href="{% url 'task_create' %}">Создать задачу</a>
+    
     <ul>
         {% for task in tasks %}
         <li>
             <strong>{{ task.title }}</strong> —
             {% if task.is_done %}✔ Выполнено{% else %}⏳ Не выполнено{% endif %}
+            — <a href="{% url 'task_update' task.pk %}">Редактировать</a>
+            — <a href="{% url 'task_delete' task.pk %}">Удалить</a>
         </li>
         {% empty %}
         <li>Пока нет задач</li>
