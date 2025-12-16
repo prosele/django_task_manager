@@ -4,11 +4,53 @@
     <title>Список задач</title>
 </head>
 <body>
+   <!-- Шапка навигации -->
+<nav>
+    <a href="{% url 'tasks_list' %}">Задачи</a>
+    {% if user.is_authenticated %}
+    <span>{{ user.username }}</span>
+    
+    <!-- Форма для выхода через POST -->
+    <form method="post" action="{% url 'logout' %}" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" style="
+            background: none;
+            border: none;
+            color: #007bff;
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 0;
+            margin-left: 15px;
+            font: inherit;
+        ">Выход</button>
+    </form>
+    
+    {% else %}
+    <a href="{% url 'login' %}">Вход</a>
+    <a href="{% url 'register' %}" style="margin-left: 15px;">Регистрация</a>
+    {% endif %}
+</nav>
     <h1>Мои задачи</h1>
+
+    <!-- Форма фильтрации по категории и статусу -->
+    <form method="GET">
+        <input type="text" name="q" placeholder="Поиск...">
+        <select name="category">
+            <option value="">Все категории</option>
+            {% for c in categories %}
+            <option value="{{ c.id }}">{{ c.name }}</option>
+            {% endfor %}
+        </select>
+        <select name="status">
+            <option value="">Любой статус</option>
+            <option value="done">Выполнено</option>
+            <option value="not_done">Не выполнено</option>
+        </select>
+        <button type="submit">Применить</button>
+    </form>
     
     <!-- Ссылка для создания новой задачи -->
     <a href="{% url 'task_create' %}">Создать задачу</a>
-    
     <ul>
         {% for task in tasks %}
         <li>
@@ -21,5 +63,16 @@
         <li>Пока нет задач</li>
         {% endfor %}
     </ul>
+
+    <!-- Пагинация -->
+     <div>
+        {% if tasks.has_previous %}
+        <a href="?page={{ tasks.previous_page_number }}">Назад</a>
+        {% endif %}
+        Страница {{ tasks.number }} из {{ tasks.paginator.num_pages }}
+        {% if tasks.has_next %}
+        <a href="?page={{ tasks.next_page_number }}">Вперед</a>
+        {% endif %}
+    </div>
 </body>
 </html>
